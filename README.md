@@ -13,13 +13,17 @@ yaml
 
 Install the required dependencies:
 with sudo access: pip3 install -r requirements.txt
+
 without sudo access: pip3 install -r requirements.txt --user
 
 
 Usage:
 python client.py --help
+
 python client.py --action contribute --value template.yaml --token <token>
+
 python client.py --action update --value <osc-id>.yaml --token <token>
+
 python client.py --action query --value <osc-id>
 
 User can get the "token" by logging into the portal and copy the token string under My OSC->Profile. The token value passed in the command line takes precedence over the one present in the "template" file. The token is valid for 10 days.
