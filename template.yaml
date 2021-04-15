@@ -1,0 +1,68 @@
+--- 
+# MANDATORY - You need to login to the portal and copy the token string under My OSC->Profile
+# If this field is empty, token must be passed in the command line. Command line token takes precedence 
+# Include the token after ": " in the same line
+Token: need_a_token_if_not_passed_as_a_cmdline_param
+
+# MANDATORY (One of Files or Directories)
+# List of files (start with '- ')
+Files:
+- /Users/manu1729/sdsc/publications/pearc21/paper.tex
+
+# List of directories (start with '- '). 
+# Note that all files and directories within the listed directories will be included recursively
+Directories:
+- /Users/manu1729/sdsc/osc/osc-hfl/config/
+- /Users/manu1729/sdsc/osc/OSC-CLI/
+
+# A list of files and directories to exclude during contribution (start with '- ')
+ExcludeList:
+- /Users/manu1729/sdsc/osc/OSC-CLI/README.txt 
+
+# MANDATORY - Title of the contribution
+# Include the title after ": " in the same line
+Title: testmar182021a
+
+# Description of the contribution
+# Include the description after ": " in the same line
+Description: 
+
+# Keywords for identifying the dataset contribution
+# Include a comma separate list of keywords after ": " in the same line
+Keywords: data
+
+
+# MANDATORY (One or both of DOI, URL)
+
+# DOI for the data (after ": ")
+DOI:
+
+# URL for the data (after ": ")
+URL: http://test.com
+
+#Other associated ID (can be of type AccessionNumber or PDBID)
+# Include the associated ID type after": " in the same line
+#AssociatedID: None
+
+# Include the value of the associated ID after": " in the same line
+#AssociatedIDVal:
+
+# Funding agency, add "true"  after ":" to select the agency
+Funding:
+ - NASA: 
+ - NIH: 
+ - NOAA: true
+ - NSF: 
+
+# Any acknowledgements (after ": ")
+# Funding related info ......
+Acknowledgment:
+
+
+#This information should be provided to the user (stdout or in a file)
+#Summary:
+#------------
+#What ever has been input like
+#Manifest:
+#Filename:
+#SHA256: 
