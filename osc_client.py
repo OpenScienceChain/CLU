@@ -289,10 +289,10 @@ def query_data(id, tok):
   if (res_json['docType'] == 'org.osc.Error'):
      print ("Error: " + res_json['info'])
   else:
-     print ("A copy of data from your query is stored as " + res_json['id']+".dat")
-     with open(res_json['id']+".dat", "w") as fout:
-       json.dump(res_json, fout)  
-     fout.close()
+#     print ("A copy of data from your query is stored as " + res_json['id']+".dat")
+#     with open(res_json['id']+".dat", "w") as fout:
+#       json.dump(res_json, fout)  
+#     fout.close()
      
      print ("A copy of data from your query is stored as " + res_json['id']+".yaml")
      print ("This file should be used to update / modify the contributed dataset if you were the contributor.")

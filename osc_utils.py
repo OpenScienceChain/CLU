@@ -175,8 +175,8 @@ def update_summary(new_files, old_files, updated_files, deleted_files, id):
 
   fout.close() 
   
-  print ("Please check 'changes.txt-" + id + "' for details and then continue with the udpate operation.")
-  inp = input("Are you sure continue (Y/N): ")
+  print ("Please check 'changes.txt-" + id + "' for details and then continue with the update operation.")
+  inp = input("Continue with the update operation (Y/N): ")
   if (inp.lower() != 'y'):
     print ("Aborting the update operation.....")
     sys.exit(-1)    
