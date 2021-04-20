@@ -8,20 +8,28 @@ Token: need_a_token_if_not_passed_as_a_cmdline_param
 # List of files (start with '- ')
 Files:
 - /Users/manu1729/sdsc/publications/pearc21/paper.tex
+- /Users/manu1729/sdsc/publications/pearc21/paper-submitted.pdf
+- /Users/manu1729/sdsc/publications/pearc21/Figures.pptx
 
 # List of directories (start with '- '). 
 # Note that all files and directories within the listed directories will be included recursively
 Directories:
-- /Users/manu1729/sdsc/osc/osc-hfl/config/
-- /Users/manu1729/sdsc/osc/OSC-CLI/
+- /Users/manu1729/sdsc/publications/pearc21/
 
 # A list of files and directories to exclude during contribution (start with '- ')
 ExcludeList:
-- /Users/manu1729/sdsc/osc/OSC-CLI/README.txt 
+- /Users/manu1729/sdsc/publications/pearc21/acmart-master
+- /Users/manu1729/sdsc/publications/pearc21/acmart-primary.zip 
+- /Users/manu1729/sdsc/publications/pearc21/paper.synctex.gz
+- /Users/manu1729/sdsc/publications/pearc21/paper.out
+- /Users/manu1729/sdsc/publications/pearc21/paper.aux
+- /Users/manu1729/sdsc/publications/pearc21/comment.cut
+- /Users/manu1729/sdsc/publications/pearc21/paper.blg
+- /Users/manu1729/sdsc/publications/pearc21/paper.bbl
 
 # MANDATORY - Title of the contribution
 # Include the title after ": " in the same line
-Title: testmar182021a
+Title: PEARC21 Submission
 
 # Description of the contribution
 # Include the description after ": " in the same line
@@ -51,8 +59,8 @@ URL: http://test.com
 Funding:
  - NASA: 
  - NIH: 
- - NOAA: true
- - NSF: 
+ - NOAA: 
+ - NSF: true
 
 # Any acknowledgements (after ": ")
 # Funding related info ......

@@ -19,8 +19,8 @@ from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 #####################################################
 
-str="osc-120b507d-7203-4d20-b3ec-4df595a87834.json"
-
+URL_PROD="https://portal.opensciencechain.sdsc.edu/api/data/"
+URL_DEV="https://osc-dev.ucsd.edu/api/data/"
 
 # use this regular expression? /^10.\d{4,9}/[-._;()/:A-Z0-9]+$/i
 def validate_doi(doi):
@@ -253,7 +253,7 @@ def contribute_data(f, cli_tok):
   out = json.dumps(json_data)
   
   ################
-  url = 'https://osc-dev.ucsd.edu/api/data/'
+  url = URL_PROD
 #  h = {'accept': 'application/json', 'Content-Type': 'application/json', 'authorization':'Bearer ' + data['Token']}
   h = {'accept': 'application/json', 'Content-Type': 'application/json', 'authorization':'Bearer ' + tok}
 #  res = requests.post(url, data=out, headers=h, verify=False)
@@ -277,7 +277,7 @@ def contribute_data(f, cli_tok):
 
 # at present token is not used for query
 def query_data(id, tok):
-  url = 'https://osc-dev.ucsd.edu/api/data/'+id
+  url = URL_PROD + id
   h = {'accept': 'application/json', 'Content-Type': 'application/json'}
 #  res = requests.get(url, headers=h, verify=False)
   res = requests.get(url, headers=h, verify=True)
@@ -328,7 +328,7 @@ def update_data(f, cli_tok):
   out = json.dumps(json_data)
   
   ################
-  url = 'https://osc-dev.ucsd.edu/api/data/'
+  url = URL_PROD
 #  h = {'accept': 'application/json', 'Content-Type': 'application/json', 'authorization':'Bearer ' + data['Token']}
   h = {'accept': 'application/json', 'Content-Type': 'application/json', 'authorization':'Bearer ' + tok}
   res = requests.put(url, data=out, headers=h, verify=False)
