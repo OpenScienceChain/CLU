@@ -19,8 +19,8 @@ without sudo access: pip3 install -r requirements.txt --user
 Usage:  
 ./osc_client.py --help   
 ./osc_client.py contribute --template template.yaml --token <token>  
-./osc_client.py update --template <osc-id>.yaml --token <token>  
-./osc_client.py query --oscid <osc-id>  
+./osc_client.py update --template osc-id.yaml --token <token>  
+./osc_client.py query --oscid osc-id  
 
 User can get the "token" by logging into the portal and copy the token string under My OSC->Profile.  
 The token value passed in the command line takes precedence over the one present in the "template"   
