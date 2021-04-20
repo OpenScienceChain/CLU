@@ -84,18 +84,17 @@ def map_headers():
  
 
 # returns a list of all files to be hashed
-# returns NULL if no files are directories are present              
+# returns NULL if no files are directories are present
 def get_all_files(data):
-  all_files = []
+  all_files = set()
 
   if (data['Files']  and  (data['Files'] != "")):
      f1 = data['Files']
-     all_files = [f for f in f1]
+     all_files = {f for f in f1}
   dir = data['Directories']
   if (data['Directories']  and (data['Directories'] != "")):
-    for d in dir: 
-      all_files.extend([f for f in glob.glob(d + "/**", recursive=True)])
-#  print(all_files)
+    for d in dir:
+      all_files.update([f for f in glob.glob(d + "/**", recursive=True)])
 
 
   # remove the files from the exclude list
@@ -108,21 +107,22 @@ def get_all_files(data):
           ex_file_list.append(f)
        elif (os.path.isdir(f)):
           ex_file_list.extend([fl for fl in glob.glob(f + "/**", recursive=True)])
- 
-  ex_file_list_dict = { i:i for i in ex_file_list }
-  for f in all_files:
-     if (f not in ex_file_list_dict):
-        final_file_list.append(f)
+
+
+  # assuming exclude list is a lot smaller than the actual file list. If not we need
+  # to modify the way we search for an element to improve performance
+  for f in ex_file_list:
+     if (f in all_files):
+        all_files.remove(f)
 
 #  print ("***********************************")
 #  print(ex_file_list_dict)
 #  print ("***********************************")
 
-#  print(final_file_list) 
+#  print(final_file_list)
 #  print ("***********************************")
-   
-  return final_file_list
 
+  return all_files
 
 def get_json_data(f, cli_tok, action):
   data = yaml.load(f, Loader=yaml.FullLoader)
