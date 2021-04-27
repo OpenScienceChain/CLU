@@ -143,10 +143,11 @@ def get_json_data(f, cli_tok, action):
       json_data[hlist1[k]] = data[k]
     else:
       json_data[hlist1[k]] = ""
-  
+
+ 
   for k,v in hlist2.items():
     if (data[k] is not None):
-      json_data[hlist2[k]] = (data[k]).split(",")
+      json_data[hlist2[k]] = [x.strip() for x in (data[k]).split(",")]
     else:
       json_data[hlist2[k]] = []
   
@@ -232,7 +233,6 @@ def get_json_data(f, cli_tok, action):
 #       print(sha256_hash.hexdigest())
   
   json_data["manifest"] = manifest_list
-
 
 
   if (action == 'update'):
