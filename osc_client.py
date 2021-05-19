@@ -20,6 +20,7 @@ requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 #####################################################
 
 URL_PROD="https://portal.opensciencechain.sdsc.edu/api/data/"
+#URL_PROD="https://osc-dev.ucsd.edu/api/data/"
 URL_DEV="https://osc-dev.ucsd.edu/api/data/"
 
 # use this regular expression? /^10.\d{4,9}/[-._;()/:A-Z0-9]+$/i
@@ -356,6 +357,7 @@ parser.add_argument("operation",  help="'contribute', 'query' or 'update'. For u
 parser.add_argument("--template", help="template file is mandatory for the contribute and update \noperations")
 parser.add_argument("--oscid", help="osc-id is mandatory for the query operation")
 parser.add_argument("--token", help="pass the authorization key obtained from the OSC Portal.\nToken is required for contribute and update operations")
+parser.add_argument('--version', action='version', version='%(prog)s 1.0.0')
 args = parser.parse_args()
 
 
