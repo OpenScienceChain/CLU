@@ -19,8 +19,10 @@ from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 #####################################################
 
-URL_PROD="https://portal.opensciencechain.sdsc.edu/api/data/"
-#URL_PROD="https://osc-dev.ucsd.edu/api/data/"
+#URL_PROD="https://portal.opensciencechain.sdsc.edu/api/data/"
+URL_PROD="https://osc-dev.ucsd.edu/api/data/"
+URL_PROD_SEARCH="https://portal.opensciencechain.sdsc.edu/api/search/"
+#URL_PROD_SEARCH="https://osc-dev.ucsd.edu/api/search/"
 URL_DEV="https://osc-dev.ucsd.edu/api/data/"
 
 # use this regular expression? /^10.\d{4,9}/[-._;()/:A-Z0-9]+$/i
@@ -276,6 +278,26 @@ def contribute_data(f, cli_tok):
        json.dump(res_json, fout)
   ################
 
+# at present token is not used for search
+def search_data(id, tok):
+  url = URL_PROD_SEARCH
+  obj = {'search':id}
+  out = json.dumps(obj) 
+  h = {'accept': 'application/json', 'Content-Type': 'application/json'}
+#  res = requests.post(url, data=out, headers=h, verify=False)
+  res = requests.post(url, data=out, headers=h, verify=True)
+  if (res.status_code != requests.codes.ok):
+      print("Error: " + res.text)
+      return -1
+  res_json_tmp = res.json()
+  if (len(res_json_tmp) == 0):
+    print ("Empty")
+  else:
+    search_summary(res_json_tmp)
+  return; ############################################################################
+
+
+
 # at present token is not used for query
 def query_data(id, tok):
   url = URL_PROD + id
@@ -355,7 +377,8 @@ def update_data(f, cli_tok):
 parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter)
 parser.add_argument("operation",  help="'contribute', 'query' or 'update'. For update, first perform\n a query and then modify the saved yaml file.")
 parser.add_argument("--template", help="template file is mandatory for the contribute and update \noperations")
-parser.add_argument("--oscid", help="osc-id is mandatory for the query operation")
+parser.add_argument("--oscid", help="osc-id or email-id is required for the query operation")
+parser.add_argument("--email", help="osc-id or email-id is required for the query operation")
 parser.add_argument("--token", help="pass the authorization key obtained from the OSC Portal.\nToken is required for contribute and update operations")
 parser.add_argument('--version', action='version', version='%(prog)s 1.0.0')
 args = parser.parse_args()
@@ -388,12 +411,16 @@ elif (args.operation == "update"):
     sys.exit(-1)
   update_data(f, args.token)  
 elif (args.operation == "query"):
-  if (args.oscid == None):
-    print("'{}' operation requires a valid oscid".format(args.operation))
+  if ((args.oscid == None) and (args.email == None)):
+    print("'{}' operation requires a valid oscid or email-id".format(args.operation))
     sys.exit(-1)
-
-  oscid=args.oscid
-  query_data(oscid, args.token)
+  if ((args.oscid != None) and (args.email != None)):
+    print("'{}' operation does not support using both oscid and email-id simultaneously. Please use only one of these parameters".format(args.operation))
+  elif (args.oscid != None):
+    oscid=args.oscid
+    query_data(oscid, args.token)
+  elif (args.email != None):
+    search_data(args.email, args.token)   
 else:
   msg = "'{}' operation is not supported".format(args.operation)
   print (msg)
