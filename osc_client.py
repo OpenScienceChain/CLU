@@ -22,7 +22,7 @@ requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 #URL_PROD="https://portal.opensciencechain.sdsc.edu/api/data/"
 URL_PROD="https://osc-dev.ucsd.edu/api/data/"
 URL_PROD_SEARCH="https://portal.opensciencechain.sdsc.edu/api/search/"
-#URL_PROD_SEARCH="https://osc-dev.ucsd.edu/api/search/"
+URL_PROD_SEARCH="https://osc-dev.ucsd.edu/api/search/"
 URL_DEV="https://osc-dev.ucsd.edu/api/data/"
 
 # use this regular expression? /^10.\d{4,9}/[-._;()/:A-Z0-9]+$/i
@@ -289,13 +289,29 @@ def search_data(id, tok):
   if (res.status_code != requests.codes.ok):
       print("Error: " + res.text)
       return -1
-  res_json_tmp = res.json()
-  if (len(res_json_tmp) == 0):
+  res_json = res.json()
+  if (len(res_json) == 0):
     print ("Empty")
   else:
-    search_summary(res_json_tmp)
-  return; ############################################################################
-
+    print ("Number of matched entries: ", len(res_json))
+    inp = input("Do you want to browse through all the entries (Y/N): ")
+    if (inp.lower() == 'n'):
+      print ("Saving the query results in yaml format, one file per matched entry")
+      for i in range(0,len(res_json)):
+          query_data(res_json[i]['id'], '')   # Search doesn't get all the fields, so need to query again based on osc-id.
+      sys.exit(-1)
+  
+    for i in range(0,len(res_json)):
+      print_summary(res_json[i])
+      inp = input("Do you want to save this entry (Y/N): ")
+      if (inp.lower() == 'y'):
+         query_data(res_json[i]['id'], '')
+  
+      inp = input("Do you want to browse the next entry (Y/N): ")
+      if (inp.lower() == 'n'):
+         print("Ending the query...")
+         sys.exit(-1)
+  
 
 
 # at present token is not used for query
@@ -312,29 +328,11 @@ def query_data(id, tok):
   if (res_json['docType'] == 'org.osc.Error'):
      print ("Error: " + res_json['info'])
   else:
-#     print ("A copy of data from your query is stored as " + res_json['id']+".dat")
-#     with open(res_json['id']+".dat", "w") as fout:
-#       json.dump(res_json, fout)  
-#     fout.close()
-     
      print ("A copy of data from your query is stored as " + res_json['id']+".yaml")
      print ("This file should be used to update / modify the contributed dataset if you were the contributor.")
-     with open(res_json['id']+".yaml", "w") as fout:
-         add_header(fout)
-         add_token(res_json, fout)
-         add_osc_id(res_json, fout)
-         add_files(res_json, fout)
-         add_dummy_placeholders(res_json, fout)
-         add_title(res_json, fout)    
-         add_description(res_json, fout)
-         add_keywords(res_json, fout)
-         add_doi(res_json, fout)
-         add_url(res_json, fout)
-         add_funding(res_json, fout)
-         add_other(res_json, fout)
-         add_ack(res_json, fout)
-         add_manifest(res_json, fout)
-         fout.close()    
+     save_query_result(res_json)
+
+
 
 # update data. We are assuming that there is a json file with the contributed 
 # data. This function will first load the json file, convert into an yaml
