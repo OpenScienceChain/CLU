@@ -19,11 +19,10 @@ from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 #####################################################
 
-#URL_PROD="https://portal.opensciencechain.sdsc.edu/api/data/"
-URL_PROD="https://osc-dev.ucsd.edu/api/data/"
-URL_PROD_SEARCH="https://portal.opensciencechain.sdsc.edu/api/search/"
-URL_PROD_SEARCH="https://osc-dev.ucsd.edu/api/search/"
-URL_DEV="https://osc-dev.ucsd.edu/api/data/"
+
+URL="https://portal.opensciencechain.sdsc.edu/"
+DATA="api/data/"
+SEARCH="api/search/"
 
 # use this regular expression? /^10.\d{4,9}/[-._;()/:A-Z0-9]+$/i
 def validate_doi(doi):
@@ -256,7 +255,7 @@ def contribute_data(f, cli_tok):
   out = json.dumps(json_data)
   
   ################
-  url = URL_PROD
+  url = URL + DATA
 #  h = {'accept': 'application/json', 'Content-Type': 'application/json', 'authorization':'Bearer ' + data['Token']}
   h = {'accept': 'application/json', 'Content-Type': 'application/json', 'authorization':'Bearer ' + tok}
 #  res = requests.post(url, data=out, headers=h, verify=False)
@@ -280,7 +279,7 @@ def contribute_data(f, cli_tok):
 
 # at present token is not used for search
 def search_data(id, tok):
-  url = URL_PROD_SEARCH
+  url = URL + SEARCH
   obj = {'search':id}
   out = json.dumps(obj) 
   h = {'accept': 'application/json', 'Content-Type': 'application/json'}
@@ -316,7 +315,7 @@ def search_data(id, tok):
 
 # at present token is not used for query
 def query_data(id, tok):
-  url = URL_PROD + id
+  url = URL + DATA + id
   h = {'accept': 'application/json', 'Content-Type': 'application/json'}
 #  res = requests.get(url, headers=h, verify=False)
   res = requests.get(url, headers=h, verify=True)
@@ -349,7 +348,7 @@ def update_data(f, cli_tok):
   out = json.dumps(json_data)
   
   ################
-  url = URL_PROD
+  url = URL + DATA
 #  h = {'accept': 'application/json', 'Content-Type': 'application/json', 'authorization':'Bearer ' + data['Token']}
   h = {'accept': 'application/json', 'Content-Type': 'application/json', 'authorization':'Bearer ' + tok}
   res = requests.put(url, data=out, headers=h, verify=False)
@@ -378,12 +377,13 @@ parser.add_argument("--template", help="template file is mandatory for the contr
 parser.add_argument("--oscid", help="osc-id or email-id is required for the query operation")
 parser.add_argument("--email", help="osc-id or email-id is required for the query operation")
 parser.add_argument("--token", help="pass the authorization key obtained from the OSC Portal.\nToken is required for contribute and update operations")
+parser.add_argument('--env', help="use the value 'dev' for the development evvironment. Default is the production environment.")
 parser.add_argument('--version', action='version', version='%(prog)s 1.0.0')
+
 args = parser.parse_args()
 
-
-#filename = input("Enter the input file name: ")
-files = []
+if (args.env == "dev"):
+   URL="https://osc-dev.ucsd.edu/"
 
 if (args.operation == "contribute"):
   if (args.template == None):
