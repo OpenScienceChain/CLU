@@ -305,7 +305,9 @@ def search_data(id, tok):
       inp = input("Do you want to save this entry (Y/N): ")
       if (inp.lower() == 'y'):
          query_data(res_json[i]['id'], '')
-  
+ 
+      if (i == len(res_json)-1):
+         break 
       inp = input("Do you want to browse the next entry (Y/N): ")
       if (inp.lower() == 'n'):
          print("Ending the query...")

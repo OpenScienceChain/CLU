@@ -187,6 +187,7 @@ def print_summary(res):
   print("OSC-ID: {}".format(res['id'])) 
   print("Title: {}".format(res['title'])) 
   print("Description: {}".format(res['description']))
+  print("Keywords: {}".format(res['keywords']))
 
 
 def save_query_result(res_json):
