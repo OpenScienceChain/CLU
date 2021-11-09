@@ -186,8 +186,10 @@ def update_summary(new_files, old_files, updated_files, deleted_files, id):
 def print_summary(res):
   print("OSC-ID: {}".format(res['id'])) 
   print("Title: {}".format(res['title'])) 
-  print("Description: {}".format(res['description']))
-  print("Keywords: {}".format(res['keywords']))
+  if (res['description'] != ""):
+     print("Description: {}".format(res['description']))
+  if (res['keywords'] != ""):
+     print("Keywords: {}".format(res['keywords']))
 
 
 def save_query_result(res_json):
