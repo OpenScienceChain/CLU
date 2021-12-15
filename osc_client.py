@@ -19,9 +19,10 @@ from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 #####################################################
 
-URL_PROD="https://portal.opensciencechain.sdsc.edu/api/data/"
-#URL_PROD="https://osc-dev.ucsd.edu/api/data/"
-URL_DEV="https://osc-dev.ucsd.edu/api/data/"
+
+URL="https://portal.opensciencechain.sdsc.edu/"
+DATA="api/data/"
+SEARCH="api/search/"
 
 # use this regular expression? /^10.\d{4,9}/[-._;()/:A-Z0-9]+$/i
 def validate_doi(doi):
@@ -254,7 +255,7 @@ def contribute_data(f, cli_tok):
   out = json.dumps(json_data)
   
   ################
-  url = URL_PROD
+  url = URL + DATA
 #  h = {'accept': 'application/json', 'Content-Type': 'application/json', 'authorization':'Bearer ' + data['Token']}
   h = {'accept': 'application/json', 'Content-Type': 'application/json', 'authorization':'Bearer ' + tok}
 #  res = requests.post(url, data=out, headers=h, verify=False)
@@ -276,9 +277,47 @@ def contribute_data(f, cli_tok):
        json.dump(res_json, fout)
   ################
 
+# at present token is not used for search
+def search_data(id, tok):
+  url = URL + SEARCH
+  obj = {'search':id}
+  out = json.dumps(obj) 
+  h = {'accept': 'application/json', 'Content-Type': 'application/json'}
+#  res = requests.post(url, data=out, headers=h, verify=False)
+  res = requests.post(url, data=out, headers=h, verify=True)
+  if (res.status_code != requests.codes.ok):
+      print("Error: " + res.text)
+      return -1
+  res_json = res.json()
+  if (len(res_json) == 0):
+    print ("Empty")
+  else:
+    print ("Number of matched entries: ", len(res_json))
+    inp = input("Do you want to browse through all the entries (Y/N): ")
+    if (inp.lower() == 'n'):
+      print ("Saving the query results in yaml format, one file per matched entry")
+      for i in range(0,len(res_json)):
+          query_data(res_json[i]['id'], '')   # Search doesn't get all the fields, so need to query again based on osc-id.
+      sys.exit(-1)
+  
+    for i in range(0,len(res_json)):
+      print_summary(res_json[i])
+      inp = input("Do you want to save this entry (Y/N): ")
+      if (inp.lower() == 'y'):
+         query_data(res_json[i]['id'], '')
+ 
+      if (i == len(res_json)-1):
+         break 
+      inp = input("Do you want to browse the next entry (Y/N): ")
+      if (inp.lower() == 'n'):
+         print("Ending the query...")
+         sys.exit(-1)
+  
+
+
 # at present token is not used for query
 def query_data(id, tok):
-  url = URL_PROD + id
+  url = URL + DATA + id
   h = {'accept': 'application/json', 'Content-Type': 'application/json'}
 #  res = requests.get(url, headers=h, verify=False)
   res = requests.get(url, headers=h, verify=True)
@@ -290,29 +329,11 @@ def query_data(id, tok):
   if (res_json['docType'] == 'org.osc.Error'):
      print ("Error: " + res_json['info'])
   else:
-#     print ("A copy of data from your query is stored as " + res_json['id']+".dat")
-#     with open(res_json['id']+".dat", "w") as fout:
-#       json.dump(res_json, fout)  
-#     fout.close()
-     
      print ("A copy of data from your query is stored as " + res_json['id']+".yaml")
      print ("This file should be used to update / modify the contributed dataset if you were the contributor.")
-     with open(res_json['id']+".yaml", "w") as fout:
-         add_header(fout)
-         add_token(res_json, fout)
-         add_osc_id(res_json, fout)
-         add_files(res_json, fout)
-         add_dummy_placeholders(res_json, fout)
-         add_title(res_json, fout)    
-         add_description(res_json, fout)
-         add_keywords(res_json, fout)
-         add_doi(res_json, fout)
-         add_url(res_json, fout)
-         add_funding(res_json, fout)
-         add_other(res_json, fout)
-         add_ack(res_json, fout)
-         add_manifest(res_json, fout)
-         fout.close()    
+     save_query_result(res_json)
+
+
 
 # update data. We are assuming that there is a json file with the contributed 
 # data. This function will first load the json file, convert into an yaml
@@ -329,7 +350,7 @@ def update_data(f, cli_tok):
   out = json.dumps(json_data)
   
   ################
-  url = URL_PROD
+  url = URL + DATA
 #  h = {'accept': 'application/json', 'Content-Type': 'application/json', 'authorization':'Bearer ' + data['Token']}
   h = {'accept': 'application/json', 'Content-Type': 'application/json', 'authorization':'Bearer ' + tok}
   res = requests.put(url, data=out, headers=h, verify=False)
@@ -355,14 +376,16 @@ def update_data(f, cli_tok):
 parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter)
 parser.add_argument("operation",  help="'contribute', 'query' or 'update'. For update, first perform\n a query and then modify the saved yaml file.")
 parser.add_argument("--template", help="template file is mandatory for the contribute and update \noperations")
-parser.add_argument("--oscid", help="osc-id is mandatory for the query operation")
+parser.add_argument("--oscid", help="osc-id or email-id is required for the query operation")
+parser.add_argument("--email", help="osc-id or email-id is required for the query operation")
 parser.add_argument("--token", help="pass the authorization key obtained from the OSC Portal.\nToken is required for contribute and update operations")
+parser.add_argument('--env', help="use the value 'dev' for the development evvironment. Default is the production environment.")
 parser.add_argument('--version', action='version', version='%(prog)s 1.0.0')
+
 args = parser.parse_args()
 
-
-#filename = input("Enter the input file name: ")
-files = []
+if (args.env == "dev"):
+   URL="https://osc-dev.ucsd.edu/"
 
 if (args.operation == "contribute"):
   if (args.template == None):
@@ -388,12 +411,16 @@ elif (args.operation == "update"):
     sys.exit(-1)
   update_data(f, args.token)  
 elif (args.operation == "query"):
-  if (args.oscid == None):
-    print("'{}' operation requires a valid oscid".format(args.operation))
+  if ((args.oscid == None) and (args.email == None)):
+    print("'{}' operation requires a valid oscid or email-id".format(args.operation))
     sys.exit(-1)
-
-  oscid=args.oscid
-  query_data(oscid, args.token)
+  if ((args.oscid != None) and (args.email != None)):
+    print("'{}' operation does not support using both oscid and email-id simultaneously. Please use only one of these parameters".format(args.operation))
+  elif (args.oscid != None):
+    oscid=args.oscid
+    query_data(oscid, args.token)
+  elif (args.email != None):
+    search_data(args.email, args.token)   
 else:
   msg = "'{}' operation is not supported".format(args.operation)
   print (msg)

@@ -181,6 +181,35 @@ def update_summary(new_files, old_files, updated_files, deleted_files, id):
     print ("Aborting the update operation.....")
     sys.exit(-1)    
 
+
+
+def print_summary(res):
+  print("OSC-ID: {}".format(res['id'])) 
+  print("Title: {}".format(res['title'])) 
+  if (res['description'] != ""):
+     print("Description: {}".format(res['description']))
+  if (res['keywords'] != ""):
+     print("Keywords: {}".format(res['keywords']))
+
+
+def save_query_result(res_json):
+  with open(res_json['id']+".yaml", "w") as fout:
+      add_header(fout)
+      add_token(res_json, fout)
+      add_osc_id(res_json, fout)
+      add_files(res_json, fout)
+      add_dummy_placeholders(res_json, fout)
+      add_title(res_json, fout)   
+      add_description(res_json, fout)
+      add_keywords(res_json, fout)
+      add_doi(res_json, fout)
+      add_url(res_json, fout)
+      add_funding(res_json, fout)
+      add_other(res_json, fout)
+      add_ack(res_json, fout)
+      add_manifest(res_json, fout)
+      fout.close()   
+   
 # # testing the above functions
 # f = open("osc-598ccdc6-9307-4ee5-91d6-3d17c6ef6b23.dat") #osc-c589dc59-38e5-497f-8d0c-d6085771a074.json")
 # fout = open("test-out.yaml", "w")
